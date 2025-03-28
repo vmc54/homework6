@@ -1,11 +1,10 @@
 import { boolean, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core"
 
-import { users } from "../auth-schema"
+import { users } from "./auth"
 import { relations } from "drizzle-orm"
 import { createSelectSchema, createInsertSchema } from "drizzle-zod"
 import { z } from "zod"
 
-export * from "../auth-schema"
 
 export const todos = pgTable("todos", {
     id: text("id").primaryKey(),

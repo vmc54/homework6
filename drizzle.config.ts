@@ -9,8 +9,8 @@ if (!url)
     `Connection string to ${process.env.NODE_ENV ? 'Neon' : 'local'} Postgres not found.`
   );
 export default defineConfig({
-  out: './migrations',
-  schema: './database/schema.ts',
+  out: './database/migrations',
+  schema: './database/schema/*',
   dialect: 'postgresql',
   dbCredentials: { url },
 });

@@ -1,10 +1,5 @@
-import { auth } from "@/lib/auth"
 import { TodoList } from "@/components/TodoList"
-import { headers } from "next/headers"
-import { eq } from "drizzle-orm"
-import { db } from "@/database/db"
-import { todos as todosTable } from "@/database/schema"
-import { Todo } from "@/database/schema"
+import { todos as todosTable, Todo } from "@/database/schema"
 
 export default async function TodosPage() {
     const todos: Todo[] = [

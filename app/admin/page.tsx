@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth"
+import { desc } from "drizzle-orm"
+
 import { db } from "@/database/db"
 import { todos } from "@/database/schema"
-import { headers } from "next/headers"
+
 import { Button } from "@/components/ui/button"
 import { deleteTodo } from "@/actions/todos"
-import { desc } from "drizzle-orm"
 
 export const dynamic = 'force-dynamic'
 
