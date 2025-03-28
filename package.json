@@ -68,7 +68,10 @@
         "typescript": "^5.8.2"
     },
     "pnpm": {
-        "overrides": {}
+        "overrides": {
+            "esbuild@<=0.24.2": ">=0.25.0",
+            "prismjs@<1.30.0": ">=1.30.0"
+        }
     },
     "packageManager": "pnpm@10.6.5"
 }
