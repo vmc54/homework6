@@ -7,7 +7,7 @@ import { z } from "zod"
 
 
 export const todos = pgTable("todos", {
-    id: text("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
     title: text("title").notNull(),
     completed: boolean("completed").notNull().default(false),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -37,9 +37,7 @@ export type Todo = z.infer<typeof selectTodoSchema>;
 
 export const insertTodoSchema = createInsertSchema(todos, {
   title: (schema: z.ZodString) => schema.nonempty("Title cannot be empty"),
-}).pick({
-  title: true,
-});
+})
 export type NewTodo = z.infer<typeof insertTodoSchema>;
 
 export default {
