@@ -13,8 +13,9 @@ export const dynamic = 'force-dynamic'
 export default async function AdminPage() {
     
     /* YOUR AUTHORIZATION CHECK HERE */
-    const session = await auth();
-    const user = session?.user;
+    import { getSession } from "better-auth/next-js";
+
+    const session = await getSession(); 
 
     const allTodos = await db.query.todos.findMany({
         with: {
