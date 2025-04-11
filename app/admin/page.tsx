@@ -11,10 +11,6 @@ export const dynamic = 'force-dynamic'
 export default async function AdminPage() {
     
     /* YOUR AUTHORIZATION CHECK HERE */
-    const session = await getSession();
-    if (!session?.user){
-        return <div className="text-center mt-10 text-muted-foreground">Sign in to view this page.</div>;
-    }
 
     const allTodos = await db.query.todos.findMany({
         with: {
