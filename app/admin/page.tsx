@@ -1,28 +1,24 @@
-import { auth } from "@/lib/auth" // Correct import
-import { Button } from "@/components/ui/button"
-import { deleteTodo } from "@/actions/todos"
+import { desc } from "drizzle-orm"
+
 import { db } from "@/database/db"
 import { todos } from "@/database/schema"
-import { desc } from "drizzle-orm"
+
+import { Button } from "@/components/ui/button"
+import { deleteTodo } from "@/actions/todos"
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminPage() {
-    // Get the user directly from the auth instance
-    const user = await auth.getUser()
+    
+    /* YOUR AUTHORIZATION CHECK HERE */
 
-    // If no user, show placeholder
-    if (!user) {
-        return <div>You are not authenticated. Please log in.</div>
-    }
-
-    // Query todos for the authenticated user
     const allTodos = await db.query.todos.findMany({
-        where: {
-            userId: user.id  // Fetch todos for the authenticated user only
-        },
         with: {
-            user: { columns: { name: true } }
+            user: {
+                columns: {
+                    name: true,
+                }
+            }
         },
         orderBy: [desc(todos.createdAt)]
     });
@@ -31,6 +27,7 @@ export default async function AdminPage() {
         <main className="py-8 px-4">
             <section className="container mx-auto">
                 <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
+
                 <div className="border rounded-md overflow-hidden">
                     <table className="w-full">
                         <thead className="bg-muted">
@@ -53,7 +50,11 @@ export default async function AdminPage() {
                                     <td className="py-2 px-4 text-center">
                                         <form action={deleteTodo}>
                                             <input type="hidden" name="id" value={todo.id} />
-                                            <Button variant="destructive" size="sm" type="submit">
+                                            <Button
+                                                variant="destructive"
+                                                size="sm"
+                                                type="submit"
+                                            >
                                                 Delete
                                             </Button>
                                         </form>
@@ -66,4 +67,4 @@ export default async function AdminPage() {
             </section>
         </main>
     )
-}
+} 
