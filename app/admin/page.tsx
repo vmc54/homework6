@@ -1,4 +1,5 @@
 import { desc } from "drizzle-orm"
+import { getServerSession } from "@daveyplate/better-auth-ui/server";
 
 import { db } from "@/database/db"
 import { todos } from "@/database/schema"
@@ -11,7 +12,15 @@ export const dynamic = 'force-dynamic'
 export default async function AdminPage() {
     
     /* YOUR AUTHORIZATION CHECK HERE */
-
+    const session = await getServerSession();
+    if (!session?.user) {
+        return (
+            <div className="text-center mt-10 text-muted-foreground">
+                Please sign in to view this page.
+            </div>
+        );
+    }
+    
     const allTodos = await db.query.todos.findMany({
         with: {
             user: {
