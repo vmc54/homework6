@@ -6,11 +6,17 @@ import { todos } from "@/database/schema"
 import { Button } from "@/components/ui/button"
 import { deleteTodo } from "@/actions/todos"
 
+import { auth } from "@/lib/auth"
+
 export const dynamic = 'force-dynamic'
 
 export default async function AdminPage() {
     
     /* YOUR AUTHORIZATION CHECK HERE */
+    const user = await auth.getUser()
+    if (!user) {
+        return null
+    }
 
     const allTodos = await db.query.todos.findMany({
         with: {
