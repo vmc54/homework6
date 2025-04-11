@@ -13,10 +13,8 @@ export const dynamic = 'force-dynamic'
 export default async function AdminPage() {
     
     /* YOUR AUTHORIZATION CHECK HERE */
-    const user = await auth.getUser()
-    if (!user) {
-        return null
-    }
+    const session = await auth();
+    const user = session?.user;
 
     const allTodos = await db.query.todos.findMany({
         with: {
