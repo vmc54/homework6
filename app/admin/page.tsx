@@ -6,16 +6,11 @@ import { todos } from "@/database/schema"
 import { Button } from "@/components/ui/button"
 import { deleteTodo } from "@/actions/todos"
 
-import { auth } from "@/lib/auth"
-
 export const dynamic = 'force-dynamic'
 
 export default async function AdminPage() {
     
     /* YOUR AUTHORIZATION CHECK HERE */
-    import { getSession } from "better-auth/next-js";
-
-    const session = await getSession(); 
 
     const allTodos = await db.query.todos.findMany({
         with: {
