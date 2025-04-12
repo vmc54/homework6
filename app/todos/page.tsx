@@ -1,7 +1,15 @@
 import { TodoList } from "@/components/TodoList"
 import { todos as todosTable, Todo } from "@/database/schema"
 
+import { auth } from "@/lib/auth"
+
 export default async function TodosPage() {
+    
+    const session = await auth()
+    const user = session?.user
+  
+    if (!user) return <p>Please log in to view your todos.</p>
+
     const todos: Todo[] = [
         {
             id: "qwerty",
