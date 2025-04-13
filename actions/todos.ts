@@ -3,69 +3,89 @@
 import { eq } from "drizzle-orm"
 import { headers } from "next/headers"
 import { revalidatePath } from "next/cache"
+import { z } from "zod"
 
 import { auth } from "@/lib/auth"
 import { db } from "@/database/db"
 import { todos } from "@/database/schema"
 
+const todoSchema = z.object({
+  title: z.string().min(1, "Title cannot be empty")
+})
+
 export async function createTodo(prevState: any, formData: FormData) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    const user = session?.user;
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  const user = session?.user
 
-    if (!user) {
-        return { error: "Not authenticated." };
-    }
+  if (!user) {
+    return { error: "Not authenticated." }
+  }
 
-    const title = formData.get("title")?.toString().trim() || "";
+  const title = formData.get("title")?.toString() ?? ""
+  const parsed = todoSchema.safeParse({ title })
 
-    if (!title) {
-        return { error: "Title cannot be empty." };
-    }
+  if (!parsed.success) {
+    return { error: parsed.error.errors[0].message }
+  }
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise(resolve => setTimeout(resolve, 1000))
 
-    await db.insert(todos).values({
-        title,
-        completed: false,
-        userId: user.id
-    });
+  await db.insert(todos).values({
+    title: parsed.data.title,
+    completed: false,
+    userId: user.id
+  })
 
-    revalidatePath("/admin");
-
-    return { data: true };
+  revalidatePath("/todos")
+  return { data: true }
 }
 
-export async function toggleTodo(formData: FormData) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    const user = session?.user;
+export async function toggleTodo(prevState: any, formData: FormData) {
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  const user = session?.user
 
-    if (!user) {
-        return { error: "Not authenticated." };
-    }
+  if (!user) {
+    return { error: "Not authenticated." }
+  }
 
-    const id = formData.get("id") as string;
-    const completed = formData.get("completed") === "true";
+  const id = formData.get("id")?.toString()
+  if (!id) return { error: "Missing ID." }
 
-    await db.update(todos)
-        .set({ completed })
-        .where(eq(todos.id, id));
+  const [todo] = await db
+    .select()
+    .from(todos)
+    .where(eq(todos.id, id))
 
-    revalidatePath("/admin");
+  if (!todo || todo.userId !== user.id) {
+    return { error: "You are not authorized to toggle this todo." }
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 1000))
+
+  await db.update(todos)
+    .set({ completed: !todo.completed })
+    .where(eq(todos.id, id))
+
+  revalidatePath("/todos")
+  return { data: true }
 }
 
 export async function deleteTodo(formData: FormData) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
-    const user = session?.user;
-    
-    const id = formData.get("id") as string;
-    await db.delete(todos)
-        .where(eq(todos.id, id));
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  const user = session?.user
+  if (!user) return
 
-    revalidatePath("/admin");
+  const id = formData.get("id")?.toString()
+  if (!id) return
+
+  await db.delete(todos)
+    .where(eq(todos.id, id))
+
+  revalidatePath("/admin")
 }
