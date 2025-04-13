@@ -17,7 +17,7 @@ export default async function AdminPage() {
     const session = await auth.api.getSession({ headers: await headers() })
     const user = session?.user
 
-    if (!user) return null
+    if (!user || user.role !== "admin") return null
 
     const allTodos = await db.query.todos.findMany({
         with: {
