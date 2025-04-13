@@ -79,7 +79,7 @@ export async function deleteTodo(formData: FormData) {
     headers: await headers()
   })
   const user = session?.user
-  if (!user) return
+  if (!user || user.role !== "admin") return
 
   const id = formData.get("id")?.toString()
   if (!id) return
