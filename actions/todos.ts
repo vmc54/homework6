@@ -75,24 +75,17 @@ export async function toggleTodo(prevState: any, formData: FormData) {
 }
 
 export async function deleteTodo(formData: FormData) {
-    const session = await auth.api.getSession({ headers: await headers() })
-  
-    if (!session || !session.user) {
-      return { error: "Unauthorized. Admin access required." }
-    }
-  
-    const user = session.user as typeof session.user & { role: "admin" | "user" }
-  
-    if (user.role !== "admin") {
-      return { error: "Unauthorized. Admin access required." }
-    }
-  
-    const id = formData.get("id")?.toString()
-    if (!id) return { error: "Missing ID." }
-  
-    await db.delete(todos)
-      .where(eq(todos.id, id))
-  
-    revalidatePath("/admin")
-    return { data: true }
-  }
+  const session = await auth.api.getSession({
+    headers: await headers()
+  })
+  const user = session?.user
+  if (!user) return
+
+  const id = formData.get("id")?.toString()
+  if (!id) return
+
+  await db.delete(todos)
+    .where(eq(todos.id, id))
+
+  revalidatePath("/admin")
+}
